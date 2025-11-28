@@ -1,16 +1,26 @@
 -- Ap4k/system.lua
 
--- === Надежное подключение Basalt ===
-local basalt = require("/basalt") 
+-- 1. Безопасное подключение Basalt
+local basalt
+if fs.exists("/basalt.lua") then
+    basalt = require("/basalt")
+elseif fs.exists("basalt.lua") then
+    basalt = require("basalt")
+else
+    error("Basalt not found! Run installer.")
+end
 
--- Подключаем ресурсы
-local assets = require("/Ap4k/assets") -- Ищет Ap4k/assets.lua
+-- 2. Подключение ресурсов
+local assetsPath = "/Ap4k/assets"
+if not fs.exists(assetsPath..".lua") then
+    error("Assets not found at: " .. assetsPath)
+end
+local assets = require(assetsPath)
 
--- === Инициализация UI ===
+-- === ИНИЦИАЛИЗАЦИЯ UI ===
 local main = basalt.getMainFrame()
 main:setBackground(assets.theme.desktop_bg)
 
--- Переменная для подсчета открытых окон
 local winCounter = 0
 
 -- === ФУНКЦИЯ: Создать Окно ===
@@ -21,7 +31,6 @@ local function spawnWindow(title, width, height)
     
     if xPos > 20 then winCounter = 0; xPos=2; yPos=2 end
 
-    -- Само окно
     local win = main:addFrame()
         :setPosition(xPos, yPos)
         :setSize(width, height)
@@ -29,11 +38,9 @@ local function spawnWindow(title, width, height)
         :setBackground(assets.theme.window_bg)
         :setShadow(assets.theme.window_shadow)
 
-    -- Анимация
     win:animateSize(width, height, 0.4)
-    win:setSize(1,1) -- Старт анимации с точки
+    win:setSize(1,1)
 
-    -- Заголовок
     local header = win:addFrame()
         :setPosition(1, 1)
         :setSize("parent.w", 1)
@@ -42,9 +49,8 @@ local function spawnWindow(title, width, height)
     header:addLabel()
         :setText(title)
         :setPosition(2, 1)
-        :setForeground(colors.black)
+        :setForeground(assets.theme.window_text)
         
-    -- Кнопка закрытия
     header:addButton()
         :setText(assets.icons.close)
         :setPosition("parent.w", 1):setSize(1,1)
@@ -52,7 +58,6 @@ local function spawnWindow(title, width, height)
         :setForeground(colors.white)
         :onClick(function() win:remove() end)
 
-    -- Рабочая область (контент)
     local content = win:addFrame()
         :setPosition(1, 2)
         :setSize("parent.w", "parent.h - 1")
@@ -116,13 +121,12 @@ local function appTerminal()
             local cmd = self:getValue()
             logs:addItem("> "..cmd)
             if cmd == "exit" then body:getParent():remove() end
-            -- Тут можно добавить shell.execute
             self:setValue("")
             logs:setOffsetIndex(#logs:getItems())
         end)
 end
 
--- === РАБОЧИЙ СТОЛ (Desktop) ===
+-- === РАБОЧИЙ СТОЛ ===
 local grid = main:addFlex()
     :setPosition(2, 2)
     :setSize("parent.w - 2", "parent.h - 2")
@@ -142,11 +146,11 @@ addIcon("My Files", assets.icons.folder, function() appFiles("") end)
 addIcon("Terminal", assets.icons.terminal, appTerminal)
 addIcon("Lua", assets.icons.lua, function() shell.run("bg lua") end)
 
--- === ПАНЕЛЬ ЗАДАЧ (Dock) ===
+-- === ПАНЕЛЬ ЗАДАЧ ===
 local dock = main:addFrame()
     :setPosition(1, "parent.h")
     :setSize("parent.w", 1)
-    :setBackground(assets.theme.dock_bg)
+    :setBackground(assets.theme.taskbar_bg)
     :setZIndex(50)
 
 dock:addButton()
@@ -154,11 +158,11 @@ dock:addButton()
     :setBackground(assets.theme.accent)
     :setSize(8, 1)
     :onClick(function()
-        -- Простое меню пуск
         local menu = main:addFrame():setSize(10, 4):setPosition(1, "parent.h-4"):setZIndex(100)
         menu:addButton():setText("Reboot"):setSize("parent.w", 1):setPosition(1,1):onClick(function() os.reboot() end)
         menu:addButton():setText("Shutdown"):setSize("parent.w", 1):setPosition(1,2):setBackground(colors.red):onClick(function() os.shutdown() end)
+        -- Автозакрытие меню через 3 секунды
+        basalt.schedule(function() sleep(3) menu:remove() end)
     end)
 
--- Старт
 basalt.autoUpdate()
