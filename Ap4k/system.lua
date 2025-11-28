@@ -1,14 +1,7 @@
 -- Ap4k/system.lua
 
 -- === Надежное подключение Basalt ===
-local basalt
-if fs.exists("basalt.lua") then
-    basalt = require("basalt")
-elseif fs.exists("/basalt.lua") then
-    basalt = require("/basalt")
-else
-    error("Basalt lib missing! Check startup.lua paths.")
-end
+local basalt = require("/basalt") 
 
 -- Подключаем ресурсы
 local assets = require("Ap4k.assets") -- Ищет Ap4k/assets.lua
