@@ -17,6 +17,8 @@ if not fs.exists("Ap4k/system.lua") then
     return
 end
 
+package.path = "/?.lua;/Ap4k/?.lua;" .. package.path
+
 -- 3. Анимация загрузки (фейковая, для красоты)
 local w, h = term.getSize()
 paintutils.drawFilledBox(w/2-10, h/2, w/2+10, h/2, colors.gray)
