@@ -1,31 +1,34 @@
--- startup.lua
-term.clear()
-term.setCursorPos(1,1)
-textutils.slowPrint("Booting Ap4kOS...", 20)
+-- startup.lua: Загрузчик Ap4kOS
 
--- 1. Авто-установка Basalt v2 (если нет)
+-- 1. Магия путей (Это решает вашу ошибку!)
+-- Мы говорим: ищи файлы везде - в корне, в папке lib, в папке Ap4k
+package.path = "/?.lua;/?/init.lua;/Ap4k/?.lua;/lib/?.lua;" .. package.path
+
+-- 2. Проверка наличия Basalt
 if not fs.exists("basalt.lua") then
-    print("\n[!] Basalt lib missing. Downloading...")
-    if not http then error("Need HTTP API enabled!") end
-    -- Ссылка на Release v2 (пример, лучше проверить актуальную)
-    shell.run("wget https://github.com/Pyroxenium/Basalt2/releases/download/v2.0.0-beta/basalt.lua basalt.lua")
-end
-
--- 2. Загрузка ресурсов
-if not fs.exists("Ap4k/system.lua") then
-    print("[!] OS System files missing!")
+    term.clear()
+    term.setCursorPos(1,1)
+    term.setTextColor(colors.red)
+    print("CRITICAL ERROR: 'basalt.lua' not found!")
+    print("Please run 'installer' to download libraries.")
+    term.setTextColor(colors.white)
     return
 end
 
-package.path = "/?.lua;/Ap4k/?.lua;" .. package.path
+-- 3. Запуск системы
+-- Используем pcall, чтобы если ОС упадет, мы увидели ошибку, а не черный экран
+local ok, err = pcall(function()
+    shell.run("Ap4k/system.lua")
+end)
 
--- 3. Анимация загрузки (фейковая, для красоты)
-local w, h = term.getSize()
-paintutils.drawFilledBox(w/2-10, h/2, w/2+10, h/2, colors.gray)
-for i=1, 20 do
-    paintutils.drawFilledBox(w/2-10, h/2, w/2-10+i, h/2, colors.lime)
-    sleep(0.05)
+if not ok then
+    term.setBackgroundColor(colors.black)
+    term.clear()
+    term.setCursorPos(1,1)
+    term.setTextColor(colors.red)
+    print("System Crashed:")
+    print(err)
+    print("\nPress any key to reboot...")
+    os.pullEvent("key")
+    os.reboot()
 end
-
--- 4. Запуск
-shell.run("Ap4k/system.lua")
