@@ -8,7 +8,7 @@ if not fs.exists("basalt.lua") then
     print("\n[!] Basalt lib missing. Downloading...")
     if not http then error("Need HTTP API enabled!") end
     -- Ссылка на Release v2 (пример, лучше проверить актуальную)
-    shell.run("wget https://github.com/Pyroxenium/Basalt/releases/download/v2.0.0-beta/basalt.lua basalt.lua")
+    shell.run("wget https://github.com/Pyroxenium/Basalt2/releases/download/v2.0.0-beta/basalt.lua basalt.lua")
 end
 
 -- 2. Загрузка ресурсов
