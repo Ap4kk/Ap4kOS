@@ -4,7 +4,7 @@
 local basalt = require("/basalt") 
 
 -- Подключаем ресурсы
-local assets = require("Ap4k.assets") -- Ищет Ap4k/assets.lua
+local assets = require("/Ap4k/assets") -- Ищет Ap4k/assets.lua
 
 -- === Инициализация UI ===
 local main = basalt.getMainFrame()
