@@ -1,26 +1,29 @@
 -- Ap4k/assets.lua
 local assets = {}
 
--- Цветовая схема (Theme)
 assets.theme = {
-    desktop = colors.black,       -- Цвет рабочего стола
-    taskbar = colors.gray,        -- Цвет панели задач
-    window_bg = colors.white,     -- Фон окон
-    window_header = colors.lightGray, -- Заголовок окна
-    text_main = colors.black,     -- Основной текст
-    text_header = colors.black,   -- Текст заголовков
-    accent = colors.cyan,         -- Акцентный цвет (кнопки)
-    close_btn = colors.red        -- Кнопка закрытия
+    desktop_bg = colors.black,      -- Исправлено для совпадения с system.lua
+    taskbar_bg = colors.gray,       -- Исправлено
+    dock_active = colors.lightBlue,
+    
+    window_bg = colors.white,
+    window_header = colors.lightGray,
+    window_text = colors.black,
+    window_shadow = true,           -- Нужно для system.lua
+    
+    accent = colors.cyan,
+    error = colors.red,
+    success = colors.lime
 }
 
--- Иконки (текстовые символы)
 assets.icons = {
-    menu = "\14",     -- Значок меню (гамбургер)
+    menu = "\14",
     terminal = ">_",
-    folder = "\19",   -- Папка
-    file = "\22",     -- Файл
-    close = "\215",   -- Крестик (x)
-    settings = "\15"
+    folder = "\19",
+    file = "\22",
+    close = "\215",
+    settings = "\15",
+    lua = "\14"    -- Добавил, так как используется в system.lua
 }
 
 return assets
